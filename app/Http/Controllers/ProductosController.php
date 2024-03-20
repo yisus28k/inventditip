@@ -62,6 +62,12 @@ class ProductosController extends Controller
         //
     }
 
+    public function pdf()
+    {
+        $productos = Productos::all();
+        return view('listaPrecios', compact('productos'));
+    }
+
     /**
      * Update the specified resource in storage.
      */

@@ -64,7 +64,7 @@
                 <div class="hidden sm:flex sm:items-center sm:ms-6">
                     <x-dropdown align="left">
                         <x-slot name="trigger">
-                            <x-nav-link :active="request()->routeIs(['addstock','editProduct'.'deleteProduct','products','category'])">
+                            <x-nav-link :active="request()->routeIs(['addstock'])">
                                 <span class="inline-flex rounded-md" class="space-x-8">
                                     <button class="inline-flex items-center py-5 text-sm leading-5 font-medium rounded-md">
                                         Inventario
@@ -119,7 +119,7 @@
                                 {{__('Regreso de productos')}}
                             </x-dropdown-link>
                             <x-dropdown-link href="{{ route('notaventa') }}">
-                                {{__('Nota de venta')}}
+                                {{__('Venta del dia')}}
                             </x-dropdown-link>
                         </x-slot>
                     </x-dropdown>

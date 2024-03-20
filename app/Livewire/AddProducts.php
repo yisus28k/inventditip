@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Livewire;
+
 use App\Models\Categorys;
 use App\Models\Productos;
 use Livewire\Component;
@@ -13,22 +14,44 @@ class AddProducts extends Component
     public $codigo;
     public $nombre;
     public $presentacion;
-    public float $preciocompra = 0.0;
-    public float $ganancia = 0.0;
-    public float $precioventa = 0.0;
-    public float $gananciapesos = 0.0;
+    public $preciocompra;
+    public $ganancia;
+    public $precioventa;
+    public $gananciapesos;
     public $categoria;
     public $stock;
     public $stockminimo;
 
     use LivewireAlert;
 
-    protected $listeners = ['updateSalePrice', 'updateGananciaPesos'];
-
-    public function calcularPrecioVenta()
+    public function mount()
     {
-        $this->precioventa = $this->preciocompra + ($this->preciocompra * $this->ganancia / 100);
-        $this->gananciapesos = $this->precioventa - $this->preciocompra;
+        $this->categorys = Categorys::all();
+        $this->precioventa = 0; // Inicializar el precio de venta
+        $this->gananciapesos = 0; // Inicializar la ganancia en pesos
+    }
+
+    public function updated($propertyName)
+    {
+        // Escuchar el evento emitido desde JavaScript
+        if ($propertyName == 'precioventa' || $propertyName == 'gananciapesos') {
+            $this->validate([
+                $propertyName => 'required|numeric',
+            ]);
+        }
+    }
+
+    protected $listeners = ['calculateSalePrice', 'calculateganancia'];
+
+    public function calculateSalePrice($salePrice)
+    {
+        dd($salePrice);
+        $this->precioventa = $salePrice;
+    }
+
+    public function calculateganancia($gananciaPesos)
+    {
+        $this->gananciapesos = $gananciaPesos;
     }
 
     public function guardarProducto()
@@ -39,10 +62,10 @@ class AddProducts extends Component
                     'codigo' => 'required|string|max:50|unique:productos,code',
                     'nombre' => 'required|string|max:50|unique:productos,name',
                     'presentacion' => 'required|string|max:50',
-                    'preciocompra' => 'required|regex:/^\d+(\.\d{1,2})?$/',
-                    'ganancia' => 'required|regex:/^\d+(\.\d{1,2})?$/',
-                    'precioventa' => 'required|regex:/^\d+(\.\d{1,2})?$/',
-                    'gananciapesos' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+                    'preciocompra' => 'required|numeric',
+                    'ganancia' => 'required|numeric',
+                    'precioventa' => 'required|numeric',
+                    'gananciapesos' => 'required|numeric',
                     'categoria' => 'required',
                     'stock' => 'required|numeric',
                     'stockminimo' => 'required|numeric',
@@ -82,16 +105,15 @@ class AddProducts extends Component
             $this->codigo = '';
             $this->nombre = '';
             $this->presentacion = '';
-            $this->preciocompra = 0;
-            $this->ganancia = 0;
-            $this->precioventa = 0;
-            $this->gananciapesos = 0;
+            $this->preciocompra = '';
+            $this->ganancia = '';
+            $this->precioventa = '';
+            $this->gananciapesos = '';
             $this->categoria = '';
             $this->stock = '';
             $this->stockminimo = '';
-
         } catch (\Exception $e) {
-            $this->alert('error', 'Error al guardar',[
+            $this->alert('error', 'Error al guardar', [
                 'position' => 'top-end',
                 'timer' => '2000',
                 'toast' => true,
@@ -100,20 +122,10 @@ class AddProducts extends Component
                 'text' => '',
             ]);
         }
-        
     }
-
-    public function mount()
-    {
-        $this->categorys = Categorys::all();
-    }
-
-
 
     public function render()
     {
         return view('livewire.add-products');
-        
     }
-
 }

@@ -5,6 +5,7 @@ use App\Http\Controllers\ProductosController;
 use App\Http\Controllers\CategorysController;
 use App\Http\Controllers\clientes;
 use App\Http\Controllers\ZonasController;
+use Illuminate\Support\Facades\App;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,7 +68,7 @@ Route::middleware([
         return view('ventas.inProduct');
     })->name('inproduct');
     
-    Route::get('/notaventa', function (){
+    Route::get('/registartventa', function (){
         return view('ventas.noteSale');
     })->name('notaventa');
     
@@ -79,6 +80,12 @@ Route::middleware([
     Route::get('/zonas', function () {
         return view('zonas.zonas');
     })->name('zonas');
+
+    Route::get('productos.pdf', function (){
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->loadView('products.productos');
+        return $pdf->stream();
+    })->name('productos.pdf');
 
     Route::post('clientes.store', [clientes::class, 'store'])->name('clientes.store');
 
